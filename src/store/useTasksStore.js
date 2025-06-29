@@ -1,8 +1,21 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 export const useTasksStore = defineStore('tasks', () => {
   const tasks = ref([])
+
+  const stored = localStorage.getItem('tasks')
+  if (stored) {
+    tasks.value = JSON.parse(stored)
+  }
+
+  watch(
+    tasks,
+    (newVal) => {
+      localStorage.setItem('tasks', JSON.stringify(newVal))
+    },
+    { deep: true }
+  )
 
   const tasksByState = computed(() => {
     return (stateId) => tasks.value.filter((task) => task.state_id === stateId)
@@ -33,6 +46,11 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
+  function clearAllTasks() {
+    tasks.value = []
+    localStorage.removeItem('tasks')
+  }
+
   return {
     tasks,
     tasksByState,
@@ -40,5 +58,6 @@ export const useTasksStore = defineStore('tasks', () => {
     updateTask,
     deleteTask,
     restoreTask,
+    clearAllTasks,
   }
 })

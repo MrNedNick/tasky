@@ -5,7 +5,8 @@
         <h1 class="text-h5 font-weight-medium">Tasky — Kanban Board</h1>
       </v-col>
       <v-col cols="auto">
-        <v-btn color="primary" @click="openAdd">Add Task</v-btn>
+        <v-btn color="primary" class="mr-2" @click="openAdd">Add Task</v-btn>
+        <v-btn color="error" @click="clearAll">Clear All Tasks</v-btn>
       </v-col>
     </v-row>
 
@@ -61,7 +62,19 @@ function saveTask(t) {
   }
 }
 
+function clearAll() {
+  store.clearAllTasks()
+}
+
 function applyFilters(payload) {
   filters.value = payload
 }
 </script>
+
+<style lang="scss" scoped>
+.tasks-page {
+  background-color: #001d4a;
+  min-height: 100vh;
+  padding: 16px;
+}
+</style>

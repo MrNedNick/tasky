@@ -14,7 +14,9 @@
         @end="onDragEnd"
       >
         <template #item="{ element }">
-          <TaskCard :task="element" @edit="editTask(element)" />
+          <div :data-id="element.id">
+            <TaskCard :task="element" @edit="editTask(element)" />
+          </div>
         </template>
       </draggable>
     </v-col>
@@ -22,13 +24,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { useTasksStore } from '@/store/useTasksStore'
 import draggable from 'vuedraggable'
 import TaskCard from './TaskCard.vue'
-import { toRefs } from 'vue'
 
-// Принимаем filters как проп
 const props = defineProps({
   filters: {
     type: Object,
@@ -42,7 +41,6 @@ const props = defineProps({
 
 const store = useTasksStore()
 
-// Список колонок
 const columns = [
   { id: 1, title: 'Open' },
   { id: 2, title: 'In Progress' },
@@ -50,7 +48,6 @@ const columns = [
   { id: 4, title: 'Trash' },
 ]
 
-// Метод, возвращающий отфильтрованные задачи
 function filteredTasksByState(stateId) {
   return store.tasksByState(stateId).filter((task) => {
     const searchMatch = props.filters.search
@@ -65,16 +62,20 @@ function filteredTasksByState(stateId) {
   })
 }
 
-// Перемещение
 function onDragEnd(evt) {
-  const { item, to } = evt
+  const taskId = evt.item.dataset.id
+  if (!taskId) return
+
   const newStateId = columns.find((col) =>
-    to.closest('.kanban__column').querySelector('.kanban__title').textContent.startsWith(col.title),
+    evt.to
+      .closest('.kanban__column')
+      .querySelector('.kanban__title')
+      .textContent.startsWith(col.title),
   ).id
-  store.updateTask(item.id, { state_id: newStateId })
+
+  store.updateTask(taskId, { state_id: newStateId })
 }
 
-// Редактирование
 function editTask(task) {
   console.log('Edit', task)
 }
