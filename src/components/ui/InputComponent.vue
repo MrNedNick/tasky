@@ -27,7 +27,7 @@ const props = defineProps({
   },
 })
 </script>
-вnву
+вnвув
 <style scoped>
 .custom-input {
   max-width: 450px;
